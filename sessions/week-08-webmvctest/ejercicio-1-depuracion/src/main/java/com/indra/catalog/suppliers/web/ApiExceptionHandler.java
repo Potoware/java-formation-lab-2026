@@ -32,6 +32,6 @@ public class ApiExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(
-                Instant.now(), 500, "INTERNAL_ERROR", List.of(exception.toString()), request.getRequestURI()));
+                Instant.now(), 500, "INTERNAL_ERROR", List.of("Ha ocurrido un error interno inesperado"), request.getRequestURI()));
     }
 }
