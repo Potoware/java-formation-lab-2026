@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.indra.catalog.suppliers.application.SupplierServiceImpl;
+import com.indra.catalog.suppliers.application.SupplierService;
 import com.indra.catalog.suppliers.domain.Supplier;
 import com.indra.catalog.suppliers.domain.SupplierNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class SupplierControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private SupplierServiceImpl supplierService;
+    private SupplierService supplierService;
 
     @Test
     void test1() throws Exception {
