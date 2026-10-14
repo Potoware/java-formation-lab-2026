@@ -58,11 +58,12 @@ class SupplierControllerTest {
 
     @Test
     void test3() throws Exception {
-        when(supplierService.create(any())).thenAnswer(invocation -> {
-            Supplier supplier = invocation.getArgument(0);
-            supplier.setId("SUP-001");
-            return supplier;
-        });
+        Supplier created = new Supplier();
+        created.setId("SUP-001");
+        created.setName("ACME LTDA");
+        created.setTaxId("900123456-7");
+        created.setEmail("compras@acme.co");
+        when(supplierService.create(any())).thenReturn(created);
 
         mockMvc.perform(post("/api/suppliers")
                         .contentType(MediaType.APPLICATION_JSON)

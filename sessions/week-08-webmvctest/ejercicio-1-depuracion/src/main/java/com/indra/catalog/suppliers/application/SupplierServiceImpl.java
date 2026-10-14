@@ -18,6 +18,10 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public Supplier create(Supplier supplier) {
+        supplier.normalize();
+        if (supplier.getInternalNotes() == null) {
+            supplier.setInternalNotes("Creado vía API el " + java.time.LocalDateTime.now());
+        }
         supplier.setId("SUP-%03d".formatted(sequence.incrementAndGet()));
         return repository.save(supplier);
     }

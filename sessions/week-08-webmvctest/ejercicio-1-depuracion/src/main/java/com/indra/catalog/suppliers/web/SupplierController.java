@@ -6,7 +6,6 @@ import com.indra.catalog.suppliers.web.dto.CreateSupplierRequest;
 import com.indra.catalog.suppliers.web.dto.SupplierResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.LocalDateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,11 +36,6 @@ public class SupplierController {
     @PostMapping
     public ResponseEntity<SupplierResponse> create(@Valid @RequestBody CreateSupplierRequest request) {
         Supplier supplier = mapper.toDomain(request);
-        // Normalización exigida por el área de compras: razón social en mayúsculas y NIT sin puntos
-        supplier.setName(supplier.getName().trim().toUpperCase());
-        supplier.setTaxId(supplier.getTaxId().replace(".", "").trim());
-        supplier.setInternalNotes("Creado vía API el " + LocalDateTime.now());
-
         Supplier created = supplierService.create(supplier);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()

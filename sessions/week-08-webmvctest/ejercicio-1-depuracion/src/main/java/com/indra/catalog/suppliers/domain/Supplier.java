@@ -47,4 +47,13 @@ public class Supplier {
     public void setInternalNotes(String internalNotes) {
         this.internalNotes = internalNotes;
     }
+
+    public void normalize() {
+        if (this.name != null) {
+            this.name = this.name.trim().toUpperCase();
+        }
+        if (this.taxId != null) {
+            this.taxId = this.taxId.replace(".", "").trim();
+        }
+    }
 }
