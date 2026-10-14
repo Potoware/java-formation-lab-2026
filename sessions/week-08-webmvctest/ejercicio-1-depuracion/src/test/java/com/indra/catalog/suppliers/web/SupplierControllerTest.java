@@ -2,11 +2,11 @@ package com.indra.catalog.suppliers.web;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.indra.catalog.suppliers.application.SupplierService;
 import com.indra.catalog.suppliers.domain.Supplier;
 import com.indra.catalog.suppliers.domain.SupplierNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,7 +34,8 @@ class SupplierControllerTest {
     private SupplierService supplierService;
 
     @Test
-    void test1() throws Exception {
+    @DisplayName("GET /api/suppliers/{id} con proveedor existente retorna 200 y body correcto")
+    void findById_whenSupplierExists_shouldReturn200AndSupplier() throws Exception {
         Supplier supplier = new Supplier();
         supplier.setId("SUP-001");
         supplier.setName("ACME LTDA");
@@ -43,12 +45,15 @@ class SupplierControllerTest {
 
         mockMvc.perform(get("/api/suppliers/SUP-001"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(
-                        "{\"id\":\"SUP-001\",\"name\":\"ACME LTDA\",\"taxId\":\"900123456-7\",\"email\":\"compras@acme.co\"}"));
+                .andExpect(jsonPath("$.id").value("SUP-001"))
+                .andExpect(jsonPath("$.name").value("ACME LTDA"))
+                .andExpect(jsonPath("$.taxId").value("900123456-7"))
+                .andExpect(jsonPath("$.email").value("compras@acme.co"));
     }
 
     @Test
-    void test2() throws Exception {
+    @DisplayName("GET /api/suppliers/{id} con proveedor inexistente retorna 404")
+    void findById_whenSupplierDoesNotExist_shouldReturn404NotFound() throws Exception {
         when(supplierService.findById("SUP-999")).thenThrow(new SupplierNotFoundException("SUP-999"));
 
         mockMvc.perform(get("/api/suppliers/SUP-999"))
@@ -57,7 +62,8 @@ class SupplierControllerTest {
     }
 
     @Test
-    void test3() throws Exception {
+    @DisplayName("POST /api/suppliers con body válido retorna 201 y header Location")
+    void create_whenRequestIsValid_shouldReturn201CreatedAndLocationHeader() throws Exception {
         Supplier created = new Supplier();
         created.setId("SUP-001");
         created.setName("ACME LTDA");
@@ -81,7 +87,8 @@ class SupplierControllerTest {
     }
 
     @Test
-    void test4() throws Exception {
+    @DisplayName("POST /api/suppliers con nombre vacío retorna 400 y no llama al servicio")
+    void create_whenNameIsBlank_shouldReturn400BadRequestAndNotCallService() throws Exception {
         mockMvc.perform(post("/api/suppliers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -94,10 +101,13 @@ class SupplierControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
                 .andExpect(jsonPath("$.errors[0]").value(containsString("name")));
+
+        verifyNoInteractions(supplierService);
     }
 
     @Test
-    void test5() throws Exception {
+    @DisplayName("DELETE /api/suppliers/{id} con proveedor existente retorna 204")
+    void delete_whenSupplierExists_shouldReturn204NoContent() throws Exception {
         mockMvc.perform(delete("/api/suppliers/SUP-001"))
                 .andExpect(status().isNoContent());
     }
